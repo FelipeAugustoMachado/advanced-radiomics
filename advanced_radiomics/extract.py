@@ -13,7 +13,7 @@ sys.setrecursionlimit(30000)
 
 # Funções de geração de dados ---------------------------------------------------------------------------
 
-def generateRandomImageObject(size, lims=[0,255]):
+def generateRandomImage(size, lims=[0,255]):
     """
     Create random image with numpy.random.random.
 
@@ -33,7 +33,7 @@ def generateRandomImageObject(size, lims=[0,255]):
     --------
 
     >>> import SimpleITK as sitk
-    >>> image = generateRandomImageObject((2,3,4))
+    >>> image = generateRandomImage((2,3,4))
     >>> print(sitk.GetArrayFromImage(image))
     [[[ 10 208  58 210]
       [253 142  92 100]
@@ -49,7 +49,7 @@ def generateRandomImageObject(size, lims=[0,255]):
     return image
 
 
-def generateRandomMaskObject(size, p=0.5):
+def generateRandomMask(size, p=0.5):
     """
     Create random mask with numpy.random.random.
 
@@ -69,7 +69,7 @@ def generateRandomMaskObject(size, p=0.5):
     --------
 
     >>> import SimpleITK as sitk
-    >>> mask = generateRandomMaskObject((2,3,4))
+    >>> mask = generateRandomMask((2,3,4))
     >>> print(sitk.GetArrayFromImage(mask))
     [[[0 0 1 1]
       [0 1 0 0]
@@ -125,7 +125,7 @@ def generateBoth(size, lims=[0,255], p=0.5):
       [0 0 0 1]]]
     
     """
-    image, mask = generateRandomImageObject(size, lims), generateRandomMaskObject(size, p)
+    image, mask = generateRandomImage(size, lims), generateRandomMask(size, p)
     return image, mask
 
 #Funções Abrir arquivos ----------------------------------------------------------
