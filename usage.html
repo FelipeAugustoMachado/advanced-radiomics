@@ -1,0 +1,503 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Usage &mdash; Advanced Radiomics 0.post4+g7e4d2fa documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+        <script type="text/javascript" src="_static/copybutton.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Release History" href="release-history.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Advanced Radiomics
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.post4+g7e4d2fa
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-extract">Module Extract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-analysis">Module Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-visualization">Module Visualization</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="release-history.html">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="min_versions.html">Minimum Version of Python and NumPy</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Advanced Radiomics</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Usage</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/usage.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<p>Start by importing Advanced Radiomics.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">advanced_radiomics</span>
+</pre></div>
+</div>
+<div class="section" id="module-extract">
+<h2>Module Extract<a class="headerlink" href="#module-extract" title="Permalink to this headline">¶</a></h2>
+<p>This module is used to generate random images/mask (for research), open files,
+transform images (reduce the size, create image with bins) and extract features for
+one segmentation or multiples segmentations (multiVOI).</p>
+<dl class="function">
+<dt id="advanced_radiomics.extract.generateBoth">
+<code class="sig-prename descclassname">advanced_radiomics.extract.</code><code class="sig-name descname">generateBoth</code><span class="sig-paren">(</span><em class="sig-param">size, lims=[0, 255], p=0.5</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/advanced_radiomics/extract.html#generateBoth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#advanced_radiomics.extract.generateBoth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create random both image and mask with numpy.random.random.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>size</strong> : tuple</p>
+<blockquote>
+<div><p>Shape of image.</p>
+</div></blockquote>
+<p><strong>p</strong> : float</p>
+<blockquote>
+<div><p>Percentual of values equal to 0 in mask.</p>
+</div></blockquote>
+<p><strong>lims</strong> : list</p>
+<blockquote>
+<div><p>Min and Max values of the image.</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>image</strong> : SimpleITK.Image</p>
+<blockquote>
+<div><p>Random image created.</p>
+</div></blockquote>
+<p><strong>mask</strong> : SimpleITK.Image</p>
+<blockquote>
+<div><p>Random mask created.</p>
+</div></blockquote>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">SimpleITK</span> <span class="k">as</span> <span class="nn">sitk</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">generateBoth</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sitk</span><span class="o">.</span><span class="n">GetArrayFromImage</span><span class="p">(</span><span class="n">image</span><span class="p">))</span>
+<span class="go">[[[222 221  50 176]</span>
+<span class="go">  [186 217  82  16]</span>
+<span class="go">  [160 133  53   4]]</span>
+<span class="go"> [[ 16 162 157 206]</span>
+<span class="go">  [ 24 130 228 136]</span>
+<span class="go">  [ 24  78  50 180]]]</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sitk</span><span class="o">.</span><span class="n">GetArrayFromImage</span><span class="p">(</span><span class="n">mask</span><span class="p">))</span>
+<span class="go">[[[1 1 0 0]</span>
+<span class="go">  [0 0 0 1]</span>
+<span class="go">  [0 0 0 0]]</span>
+<span class="go"> [[1 1 1 1]</span>
+<span class="go">  [1 0 0 1]</span>
+<span class="go">  [0 0 0 1]]]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="advanced_radiomics.extract.openFile">
+<code class="sig-prename descclassname">advanced_radiomics.extract.</code><code class="sig-name descname">openFile</code><span class="sig-paren">(</span><em class="sig-param">path_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/advanced_radiomics/extract.html#openFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#advanced_radiomics.extract.openFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an image object of SimpleITK given the file/directory name.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path_name</strong> : string</p>
+<blockquote>
+<div><p>Path to file/diretory</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>image</strong> : SimpleITK.Image</p>
+<blockquote>
+<div><p>Image opened.</p>
+</div></blockquote>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">image</span> <span class="o">=</span> <span class="n">openFile</span><span class="p">(</span><span class="s2">&quot;image.nrrd&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="advanced_radiomics.extract.reduceSize">
+<code class="sig-prename descclassname">advanced_radiomics.extract.</code><code class="sig-name descname">reduceSize</code><span class="sig-paren">(</span><em class="sig-param">image_object</em>, <em class="sig-param">mask_object</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/advanced_radiomics/extract.html#reduceSize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#advanced_radiomics.extract.reduceSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reduce the size of both image and mask, where is the VOI.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>image_object</strong> : SimpleITK.Image</p>
+<blockquote>
+<div><p>Image Object with the original image.</p>
+</div></blockquote>
+<p><strong>mask_object</strong> : SimpleITK.Image</p>
+<blockquote>
+<div><p>Image Object with the mask.</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>red_image_object</strong> : SimpleITK.Image</p>
+<blockquote>
+<div><p>Image Object with the image reduced.</p>
+</div></blockquote>
+<p><strong>red_mask_object</strong> : SimpleITK.Image</p>
+<blockquote>
+<div><p>Image Object with the mask reduced.</p>
+</div></blockquote>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">image</span> <span class="o">=</span> <span class="n">openFile</span><span class="p">(</span><span class="s2">&quot;image.nrrd&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mask</span> <span class="o">=</span> <span class="n">openFile</span><span class="p">(</span><span class="s2">&quot;mask.nrrd&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">im</span><span class="p">,</span> <span class="n">mk</span> <span class="o">=</span> <span class="n">reduceSize</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="advanced_radiomics.extract.createBin">
+<code class="sig-prename descclassname">advanced_radiomics.extract.</code><code class="sig-name descname">createBin</code><span class="sig-paren">(</span><em class="sig-param">image_object</em>, <em class="sig-param">num=8</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/advanced_radiomics/extract.html#createBin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#advanced_radiomics.extract.createBin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create image with ‘num’ bins.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>image_object</strong> : SimpleITK.Image</p>
+<blockquote>
+<div><p>Original image.</p>
+</div></blockquote>
+<p><strong>num</strong> : int</p>
+<blockquote>
+<div><p>Number of bins, default = 8.</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>image_object_bin</strong> : SimpleITK.Image</p>
+<blockquote>
+<div><p>Image with ‘num’ bins.</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="advanced_radiomics.extract.extractFeatures">
+<code class="sig-prename descclassname">advanced_radiomics.extract.</code><code class="sig-name descname">extractFeatures</code><span class="sig-paren">(</span><em class="sig-param">image</em>, <em class="sig-param">mask</em>, <em class="sig-param">name</em>, <em class="sig-param">binCount=8</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/advanced_radiomics/extract.html#extractFeatures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#advanced_radiomics.extract.extractFeatures" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract all radiomics features from a image with it’s mask.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>image</strong> : SimpleITK.Image</p>
+<blockquote>
+<div><p>Original image.</p>
+</div></blockquote>
+<p><strong>mask</strong> : SimpleITK.Image</p>
+<blockquote>
+<div><p>Image’s mask.</p>
+</div></blockquote>
+<p><strong>name</strong> : string</p>
+<blockquote>
+<div><p>String with the identifier of image (name, ID or other).</p>
+</div></blockquote>
+<p><strong>binCount</strong> : int</p>
+<blockquote>
+<div><p>Number of bins, default = 8.</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>data</strong> : pandas.DataFrame</p>
+<blockquote>
+<div><p>DataFrame with the features</p>
+</div></blockquote>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">image</span> <span class="o">=</span> <span class="n">openFile</span><span class="p">(</span><span class="s2">&quot;image.nrrd&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mask</span> <span class="o">=</span> <span class="n">openFile</span><span class="p">(</span><span class="s2">&quot;mask.nrrd&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">extractFeatures</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="s2">&quot;John&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="advanced_radiomics.extract.multiVOI">
+<code class="sig-prename descclassname">advanced_radiomics.extract.</code><code class="sig-name descname">multiVOI</code><span class="sig-paren">(</span><em class="sig-param">image_object</em>, <em class="sig-param">mask_object</em>, <em class="sig-param">name</em>, <em class="sig-param">binCount=8</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/advanced_radiomics/extract.html#multiVOI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#advanced_radiomics.extract.multiVOI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Separate VOI’s.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>image_object</strong> : SimpleITK.Image</p>
+<blockquote>
+<div><p>Original image.</p>
+</div></blockquote>
+<p><strong>mask_object</strong> : SimpleITK.Image</p>
+<blockquote>
+<div><p>Mask image.</p>
+</div></blockquote>
+<p><strong>name</strong> : string</p>
+<blockquote>
+<div><p>Identifier.</p>
+</div></blockquote>
+<p><strong>binCount</strong> : int</p>
+<blockquote>
+<div><p>Number of bins.</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>dados</strong> : pandas.DataFrame</p>
+<blockquote>
+<div><p>DataFrame with features per VOI.</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-analysis">
+<h2>Module Analysis<a class="headerlink" href="#module-analysis" title="Permalink to this headline">¶</a></h2>
+<p>This module is for calculate statistics and other informations about the data.</p>
+<dl class="function">
+<dt id="advanced_radiomics.analysis.separateFeatures">
+<code class="sig-prename descclassname">advanced_radiomics.analysis.</code><code class="sig-name descname">separateFeatures</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/advanced_radiomics/analysis.html#separateFeatures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#advanced_radiomics.analysis.separateFeatures" title="Permalink to this definition">¶</a></dt>
+<dd><p>Separates feature by type (First Order, Shape, GLCM…).</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> : pandas.DataFrame</p>
+<blockquote>
+<div><p>Data with features calculated.</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>columns_dict</strong> : dict</p>
+<blockquote>
+<div><p>Dict with keys as feature’s type.</p>
+</div></blockquote>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">c_dict</span> <span class="o">=</span> <span class="n">separateFeatures</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c_dict</span><span class="p">[</span><span class="s1">&#39;GLCM&#39;</span><span class="p">]</span>
+<span class="go">  Autocorrelation_GLCM ClusterProminence_GLCM  ...      SumEntropy_GLCM    SumSquares_GLCM</span>
+<span class="go">0   19.291666666666668    0.01707175925925927  ...  0.23978697925681078  5.822048611111111</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-visualization">
+<h2>Module Visualization<a class="headerlink" href="#module-visualization" title="Permalink to this headline">¶</a></h2>
+<p>This module is used to visualizate the data and to visualizate some informations, like PCA.</p>
+<dl class="function">
+<dt id="advanced_radiomics.visualization.showImageMask">
+<code class="sig-prename descclassname">advanced_radiomics.visualization.</code><code class="sig-name descname">showImageMask</code><span class="sig-paren">(</span><em class="sig-param">image_object</em>, <em class="sig-param">mask_object</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/advanced_radiomics/visualization.html#showImageMask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#advanced_radiomics.visualization.showImageMask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show image and mask side by side.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>image_object</strong> : SimpleITK.Image</p>
+<blockquote>
+<div><p>Image object of original image.</p>
+</div></blockquote>
+<p><strong>mask_object</strong> : SimpleITK.Image</p>
+<blockquote>
+<div><p>Image object of the mask.</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="advanced_radiomics.visualization.plotPCA">
+<code class="sig-prename descclassname">advanced_radiomics.visualization.</code><code class="sig-name descname">plotPCA</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">target</em>, <em class="sig-param">normalize=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/advanced_radiomics/visualization.html#plotPCA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#advanced_radiomics.visualization.plotPCA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the first and second Principal Components of PCA and Separate Points by a class.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> : numpy.array or pandas.DataFrame</p>
+<blockquote>
+<div><p>Data with values.</p>
+</div></blockquote>
+<p><strong>target</strong> : numpy.array, pandas.Series or str</p>
+<blockquote>
+<div><p>If the class is in the data, target must be the Column’s name of the class.</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="release-history.html" class="btn btn-neutral float-right" title="Release History" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Machado, F. A. M.; Castaldoni, R. C. 
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

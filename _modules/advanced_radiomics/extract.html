@@ -1,0 +1,635 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>advanced_radiomics.extract &mdash; Advanced Radiomics 0.post4+g7e4d2fa documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+        <script type="text/javascript" src="../../_static/copybutton.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Advanced Radiomics
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.post4+g7e4d2fa
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release-history.html">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../min_versions.html">Minimum Version of Python and NumPy</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Advanced Radiomics</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>advanced_radiomics.extract</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for advanced_radiomics.extract</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">SimpleITK</span> <span class="k">as</span> <span class="nn">sitk</span>
+<span class="kn">from</span> <span class="nn">radiomics</span> <span class="k">import</span> <span class="n">firstorder</span><span class="p">,</span> <span class="n">glcm</span><span class="p">,</span> <span class="n">imageoperations</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">glrlm</span><span class="p">,</span> <span class="n">glszm</span><span class="p">,</span> <span class="n">shape2D</span><span class="p">,</span> <span class="n">ngtdm</span><span class="p">,</span> <span class="n">gldm</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span> 
+<span class="kn">import</span> <span class="nn">six</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">disable</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">)</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">setrecursionlimit</span><span class="p">(</span><span class="mi">30000</span><span class="p">)</span>
+
+<span class="c1"># Funções de geração de dados ---------------------------------------------------------------------------</span>
+
+<span class="k">def</span> <span class="nf">generateRandomImageObject</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">lims</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create random image with numpy.random.random.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    size : tuple</span>
+<span class="sd">        Shape of image.</span>
+<span class="sd">    lims : list</span>
+<span class="sd">        Min and Max values of the image.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    image : SimpleITK.Image</span>
+<span class="sd">        Random image created.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; import SimpleITK as sitk</span>
+<span class="sd">    &gt;&gt;&gt; image = generateRandomImageObject((2,3,4))</span>
+<span class="sd">    &gt;&gt;&gt; print(sitk.GetArrayFromImage(image))</span>
+<span class="sd">    [[[ 10 208  58 210]</span>
+<span class="sd">      [253 142  92 100]</span>
+<span class="sd">      [240  12  31 244]]</span>
+<span class="sd">     [[ 50 119 103 103]</span>
+<span class="sd">      [225 130  85  60]</span>
+<span class="sd">      [ 63 121 226 239]]]</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">lims</span>
+    <span class="n">image_array</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span><span class="o">-</span><span class="n">a</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">size</span><span class="p">)</span> <span class="o">+</span> <span class="n">a</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">GetImageFromArray</span><span class="p">(</span><span class="n">image_array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">image</span>
+
+
+<span class="k">def</span> <span class="nf">generateRandomMaskObject</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create random mask with numpy.random.random.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    size : tuple</span>
+<span class="sd">        Shape of image.</span>
+<span class="sd">    p : float</span>
+<span class="sd">        Percentual of values equal to 0 in mask.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    mask : SimpleITK.Image</span>
+<span class="sd">        Random mask created.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; import SimpleITK as sitk</span>
+<span class="sd">    &gt;&gt;&gt; mask = generateRandomMaskObject((2,3,4))</span>
+<span class="sd">    &gt;&gt;&gt; print(sitk.GetArrayFromImage(mask))</span>
+<span class="sd">    [[[0 0 1 1]</span>
+<span class="sd">      [0 1 0 0]</span>
+<span class="sd">      [1 1 0 1]]</span>
+<span class="sd">     [[1 1 1 0]</span>
+<span class="sd">      [1 1 0 0]</span>
+<span class="sd">      [0 1 1 0]]]</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mask_array</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">size</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">GetImageFromArray</span><span class="p">(</span><span class="n">mask_array</span><span class="p">)</span> 
+    <span class="k">return</span> <span class="n">mask</span>
+
+<div class="viewcode-block" id="generateBoth"><a class="viewcode-back" href="../../usage.html#advanced_radiomics.extract.generateBoth">[docs]</a><span class="k">def</span> <span class="nf">generateBoth</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">lims</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">],</span> <span class="n">p</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create random both image and mask with numpy.random.random.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    size : tuple</span>
+<span class="sd">        Shape of image.</span>
+<span class="sd">    p : float</span>
+<span class="sd">        Percentual of values equal to 0 in mask.</span>
+<span class="sd">    lims : list</span>
+<span class="sd">        Min and Max values of the image.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    image : SimpleITK.Image</span>
+<span class="sd">        Random image created.</span>
+<span class="sd">    mask : SimpleITK.Image</span>
+<span class="sd">        Random mask created.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; import SimpleITK as sitk</span>
+<span class="sd">    &gt;&gt;&gt; image, mask = generateBoth((2,3,4))</span>
+<span class="sd">    &gt;&gt;&gt; print(sitk.GetArrayFromImage(image))</span>
+<span class="sd">    [[[222 221  50 176]</span>
+<span class="sd">      [186 217  82  16]</span>
+<span class="sd">      [160 133  53   4]]</span>
+<span class="sd">     [[ 16 162 157 206]</span>
+<span class="sd">      [ 24 130 228 136]</span>
+<span class="sd">      [ 24  78  50 180]]]</span>
+
+<span class="sd">    &gt;&gt;&gt; print(sitk.GetArrayFromImage(mask))</span>
+<span class="sd">    [[[1 1 0 0]</span>
+<span class="sd">      [0 0 0 1]</span>
+<span class="sd">      [0 0 0 0]]</span>
+<span class="sd">     [[1 1 1 1]</span>
+<span class="sd">      [1 0 0 1]</span>
+<span class="sd">      [0 0 0 1]]]</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">image</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">generateRandomImageObject</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">lims</span><span class="p">),</span> <span class="n">generateRandomMaskObject</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">image</span><span class="p">,</span> <span class="n">mask</span></div>
+
+<span class="c1">#Funções Abrir arquivos ----------------------------------------------------------</span>
+
+<div class="viewcode-block" id="openFile"><a class="viewcode-back" href="../../usage.html#advanced_radiomics.extract.openFile">[docs]</a><span class="k">def</span> <span class="nf">openFile</span><span class="p">(</span><span class="n">path_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create an image object of SimpleITK given the file/directory name.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path_name : string</span>
+<span class="sd">        Path to file/diretory</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    image : SimpleITK.Image</span>
+<span class="sd">        Image opened.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; image = openFile(&quot;image.nrrd&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path_name</span><span class="p">):</span>
+        <span class="n">reader</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">ImageSeriesReader</span><span class="p">()</span>
+        <span class="n">dicom_names</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">GetGDCMSeriesFileNames</span><span class="p">(</span><span class="n">path_name</span><span class="p">)</span>
+        <span class="n">reader</span><span class="o">.</span><span class="n">SetFileNames</span><span class="p">(</span><span class="n">dicom_names</span><span class="p">)</span>
+        <span class="n">image_object</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+    
+    <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path_name</span><span class="p">):</span>
+        <span class="n">image_object</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">ReadImage</span><span class="p">(</span><span class="n">path_name</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Path name wrong.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">image_object</span> </div>
+
+<span class="c1"># Funções de alteração das imagens -------------------------------------------------</span>
+
+<div class="viewcode-block" id="reduceSize"><a class="viewcode-back" href="../../usage.html#advanced_radiomics.extract.reduceSize">[docs]</a><span class="k">def</span> <span class="nf">reduceSize</span><span class="p">(</span><span class="n">image_object</span><span class="p">,</span> <span class="n">mask_object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reduce the size of both image and mask, where is the VOI.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    image_object : SimpleITK.Image</span>
+<span class="sd">        Image Object with the original image.</span>
+<span class="sd">    mask_object : SimpleITK.Image</span>
+<span class="sd">        Image Object with the mask.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    red_image_object : SimpleITK.Image</span>
+<span class="sd">        Image Object with the image reduced.</span>
+<span class="sd">    red_mask_object : SimpleITK.Image</span>
+<span class="sd">        Image Object with the mask reduced.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; image = openFile(&quot;image.nrrd&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; mask = openFile(&quot;mask.nrrd&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; im, mk = reduceSize(image, mask)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mask_np</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">GetArrayFromImage</span><span class="p">(</span><span class="n">mask_object</span><span class="p">)</span>
+    <span class="n">image_np</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">GetArrayFromImage</span><span class="p">(</span><span class="n">image_object</span><span class="p">)</span>
+    <span class="n">d</span><span class="p">,</span><span class="n">l</span><span class="p">,</span><span class="n">c</span> <span class="o">=</span> <span class="n">mask_np</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">dim</span> <span class="o">=</span> <span class="p">[[],[],[]]</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">mask_np</span><span class="p">[</span><span class="n">k</span><span class="p">,:,:]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dim</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">mask_np</span><span class="p">[</span><span class="n">k</span><span class="p">,</span><span class="n">i</span><span class="p">,:]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">mask_np</span><span class="p">[</span><span class="n">k</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">dim</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+                    
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">mask_np</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">dim</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span><span class="nb">max</span><span class="p">(</span><span class="n">dim</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">dim</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span><span class="nb">max</span><span class="p">(</span><span class="n">dim</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">dim</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span><span class="nb">max</span><span class="p">(</span><span class="n">dim</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">image_np</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">dim</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span><span class="nb">max</span><span class="p">(</span><span class="n">dim</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">dim</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span><span class="nb">max</span><span class="p">(</span><span class="n">dim</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">dim</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span><span class="nb">max</span><span class="p">(</span><span class="n">dim</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">red_image_object</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">GetImageFromArray</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+    <span class="n">red_mask_object</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">GetImageFromArray</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">red_image_object</span><span class="p">,</span> <span class="n">red_mask_object</span></div>
+
+<div class="viewcode-block" id="createBin"><a class="viewcode-back" href="../../usage.html#advanced_radiomics.extract.createBin">[docs]</a><span class="k">def</span> <span class="nf">createBin</span><span class="p">(</span><span class="n">image_object</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create image with &#39;num&#39; bins.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    image_object : SimpleITK.Image</span>
+<span class="sd">        Original image.</span>
+<span class="sd">    num : int</span>
+<span class="sd">        Number of bins, default = 8.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    image_object_bin : SimpleITK.Image</span>
+<span class="sd">        Image with &#39;num&#39; bins.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">image_array</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">GetArrayFromImage</span><span class="p">(</span><span class="n">image_object</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">image_array</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="n">num</span><span class="p">)</span>
+    <span class="n">bin_edges</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+        <span class="n">image_array</span><span class="p">[(</span><span class="n">image_array</span> <span class="o">&gt;=</span> <span class="n">bin_edges</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">image_array</span> <span class="o">&lt;</span> <span class="n">bin_edges</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])]</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+    <span class="n">image_object_bin</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">GetImageFromArray</span><span class="p">(</span><span class="n">image_array</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">image_object_bin</span></div>
+
+
+<span class="c1"># Função de extração -----------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="extractFeatures"><a class="viewcode-back" href="../../usage.html#advanced_radiomics.extract.extractFeatures">[docs]</a><span class="k">def</span> <span class="nf">extractFeatures</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">binCount</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extract all radiomics features from a image with it&#39;s mask.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    image : SimpleITK.Image</span>
+<span class="sd">        Original image.</span>
+<span class="sd">    mask : SimpleITK.Image</span>
+<span class="sd">        Image&#39;s mask.</span>
+<span class="sd">    name : string</span>
+<span class="sd">        String with the identifier of image (name, ID or other).</span>
+<span class="sd">    binCount : int</span>
+<span class="sd">        Number of bins, default = 8.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    data : pandas.DataFrame</span>
+<span class="sd">        DataFrame with the features</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; image = openFile(&quot;image.nrrd&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; mask = openFile(&quot;mask.nrrd&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; df = extractFeatures(image, mask, &quot;John&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">firstOrderFeatures</span> <span class="o">=</span> <span class="n">firstorder</span><span class="o">.</span><span class="n">RadiomicsFirstOrder</span><span class="p">(</span><span class="n">image</span><span class="p">,</span><span class="n">mask</span><span class="p">,</span> <span class="n">binCount</span><span class="o">=</span><span class="n">binCount</span><span class="p">)</span>
+    <span class="n">firstOrderFeatures</span><span class="o">.</span><span class="n">enableAllFeatures</span><span class="p">()</span>  <span class="c1"># On the feature class level, all features are disabled by default.</span>
+    <span class="n">firstOrderFeatures</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Caso&#39;</span><span class="p">]</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span><span class="p">]</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">val</span><span class="p">)</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">iteritems</span><span class="p">(</span><span class="n">firstOrderFeatures</span><span class="o">.</span><span class="n">featureValues</span><span class="p">):</span>
+        <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s1">&#39;_FO&#39;</span><span class="p">)</span>
+        <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+    <span class="n">shape_3D</span> <span class="o">=</span> <span class="n">shape</span><span class="o">.</span><span class="n">RadiomicsShape</span><span class="p">(</span><span class="n">image</span><span class="p">,</span><span class="n">mask</span><span class="p">,</span> <span class="n">binCount</span><span class="o">=</span><span class="n">binCount</span><span class="p">)</span>
+    <span class="n">shape_3D</span><span class="o">.</span><span class="n">enableAllFeatures</span><span class="p">()</span>  <span class="c1"># On the feature class level, all features are disabled by default.</span>
+    <span class="n">shape_3D</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">val</span><span class="p">)</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">iteritems</span><span class="p">(</span><span class="n">shape_3D</span><span class="o">.</span><span class="n">featureValues</span><span class="p">):</span>
+        <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s1">&#39;_S3D&#39;</span><span class="p">)</span>
+        <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+    <span class="n">GLCM</span> <span class="o">=</span> <span class="n">glcm</span><span class="o">.</span><span class="n">RadiomicsGLCM</span><span class="p">(</span><span class="n">image</span><span class="p">,</span><span class="n">mask</span><span class="p">,</span> <span class="n">binCount</span><span class="o">=</span><span class="n">binCount</span><span class="p">)</span>
+    <span class="n">GLCM</span><span class="o">.</span><span class="n">enableAllFeatures</span><span class="p">()</span>  <span class="c1"># On the feature class level, all features are disabled by default.</span>
+    <span class="n">GLCM</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">val</span><span class="p">)</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">iteritems</span><span class="p">(</span><span class="n">GLCM</span><span class="o">.</span><span class="n">featureValues</span><span class="p">):</span>
+        <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s1">&#39;_GLCM&#39;</span><span class="p">)</span>
+        <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+    <span class="n">GLSZM</span> <span class="o">=</span> <span class="n">glszm</span><span class="o">.</span><span class="n">RadiomicsGLSZM</span><span class="p">(</span><span class="n">image</span><span class="p">,</span><span class="n">mask</span><span class="p">,</span> <span class="n">binCount</span><span class="o">=</span><span class="n">binCount</span><span class="p">)</span>
+    <span class="n">GLSZM</span><span class="o">.</span><span class="n">enableAllFeatures</span><span class="p">()</span>  <span class="c1"># On the feature class level, all features are disabled by default.</span>
+    <span class="n">GLSZM</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">val</span><span class="p">)</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">iteritems</span><span class="p">(</span><span class="n">GLSZM</span><span class="o">.</span><span class="n">featureValues</span><span class="p">):</span>
+        <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s1">&#39;_GLSZM&#39;</span><span class="p">)</span>
+        <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+    <span class="n">GLRLM</span> <span class="o">=</span> <span class="n">glrlm</span><span class="o">.</span><span class="n">RadiomicsGLRLM</span><span class="p">(</span><span class="n">image</span><span class="p">,</span><span class="n">mask</span><span class="p">,</span> <span class="n">binCount</span><span class="o">=</span><span class="n">binCount</span><span class="p">)</span>
+    <span class="n">GLRLM</span><span class="o">.</span><span class="n">enableAllFeatures</span><span class="p">()</span>  <span class="c1"># On the feature class level, all features are disabled by default.</span>
+    <span class="n">GLRLM</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">val</span><span class="p">)</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">iteritems</span><span class="p">(</span><span class="n">GLRLM</span><span class="o">.</span><span class="n">featureValues</span><span class="p">):</span>
+        <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s1">&#39;_GLRLM&#39;</span><span class="p">)</span>
+        <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+
+    <span class="n">NGTDM</span> <span class="o">=</span> <span class="n">ngtdm</span><span class="o">.</span><span class="n">RadiomicsNGTDM</span><span class="p">(</span><span class="n">image</span><span class="p">,</span><span class="n">mask</span><span class="p">,</span> <span class="n">binCount</span><span class="o">=</span><span class="n">binCount</span><span class="p">)</span>
+    <span class="n">NGTDM</span><span class="o">.</span><span class="n">enableAllFeatures</span><span class="p">()</span>  <span class="c1"># On the feature class level, all features are disabled by default.</span>
+    <span class="n">NGTDM</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">val</span><span class="p">)</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">iteritems</span><span class="p">(</span><span class="n">NGTDM</span><span class="o">.</span><span class="n">featureValues</span><span class="p">):</span>
+        <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s1">&#39;_NGTDM&#39;</span><span class="p">)</span>
+        <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+
+    <span class="n">GLDM</span> <span class="o">=</span> <span class="n">gldm</span><span class="o">.</span><span class="n">RadiomicsGLDM</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">binCount</span><span class="o">=</span><span class="n">binCount</span><span class="p">)</span>
+    <span class="n">GLDM</span><span class="o">.</span><span class="n">enableAllFeatures</span><span class="p">()</span>
+    <span class="n">GLDM</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">val</span><span class="p">)</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">iteritems</span><span class="p">(</span><span class="n">GLDM</span><span class="o">.</span><span class="n">featureValues</span><span class="p">):</span>
+        <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s1">&#39;_GLDM&#39;</span><span class="p">)</span>
+        <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+
+    <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="n">values</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="n">names</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="multiVOI"><a class="viewcode-back" href="../../usage.html#advanced_radiomics.extract.multiVOI">[docs]</a><span class="k">def</span> <span class="nf">multiVOI</span><span class="p">(</span><span class="n">image_object</span><span class="p">,</span> <span class="n">mask_object</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">binCount</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Separate VOI&#39;s.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    image_object : SimpleITK.Image</span>
+<span class="sd">        Original image.</span>
+<span class="sd">    mask_object : SimpleITK.Image</span>
+<span class="sd">        Mask image.</span>
+<span class="sd">    name : string</span>
+<span class="sd">        Identifier.</span>
+<span class="sd">    binCount : int</span>
+<span class="sd">        Number of bins.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dados : pandas.DataFrame</span>
+<span class="sd">        DataFrame with features per VOI.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Auxiliar functions -------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">):</span>
+        <span class="n">matrix</span><span class="p">[</span><span class="n">matrix</span><span class="o">==</span><span class="n">old</span><span class="p">]</span> <span class="o">=</span> <span class="n">new</span>
+        <span class="k">return</span> <span class="n">matrix</span>
+    
+    <span class="k">def</span> <span class="nf">findElement</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
+        <span class="n">l</span><span class="p">,</span><span class="n">c</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">matrix_f</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">*</span><span class="n">element</span>
+        <span class="n">arg_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">matrix_f</span><span class="p">)</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">arg_max</span><span class="o">//</span><span class="n">c</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="n">arg_max</span><span class="o">%</span><span class="n">c</span>
+        <span class="k">return</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span>
+
+    <span class="k">def</span> <span class="nf">searchVOI</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+        <span class="n">l</span><span class="p">,</span><span class="n">c</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="o">=</span> <span class="n">p</span>
+        <span class="n">matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="o">!=</span><span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="p">[[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]]</span> <span class="o">+</span> <span class="p">(</span><span class="n">j</span><span class="o">!=</span><span class="n">c</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span><span class="o">!=</span><span class="n">l</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]]</span> <span class="o">+</span> <span class="p">(</span><span class="n">j</span><span class="o">!=</span><span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>  <span class="o">+</span> <span class="p">(</span><span class="n">i</span><span class="o">!=</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">j</span><span class="o">!=</span><span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="p">[[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span><span class="o">!=</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">j</span><span class="o">!=</span><span class="n">c</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="p">[[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span><span class="o">!=</span><span class="n">l</span><span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">j</span><span class="o">!=</span><span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span><span class="o">!=</span><span class="n">l</span><span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">j</span><span class="o">!=</span><span class="n">c</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
+
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">:</span>
+            <span class="n">di</span><span class="p">,</span> <span class="n">dj</span> <span class="o">=</span> <span class="n">a</span>
+            <span class="k">if</span> <span class="n">matrix</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">di</span><span class="p">,</span><span class="n">j</span><span class="o">+</span><span class="n">dj</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+
+                <span class="n">matrix</span> <span class="o">=</span> <span class="n">searchVOI</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="n">di</span><span class="p">,</span><span class="n">j</span><span class="o">+</span><span class="n">dj</span><span class="p">))</span>
+                
+        <span class="k">return</span> <span class="n">matrix</span>
+
+    <span class="c1"># --------------------------------------------------</span>
+
+    <span class="n">seg</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">GetArrayFromImage</span><span class="p">(</span><span class="n">mask_object</span><span class="p">)</span>
+    <span class="n">seg</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span>
+    <span class="n">d</span><span class="p">,</span><span class="n">l</span><span class="p">,</span><span class="n">c</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">dados</span> <span class="o">=</span> <span class="kc">None</span>
+    
+    <span class="n">cont</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">find</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">seg_copy</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">seg_copy</span> <span class="o">=</span> <span class="n">seg_copy</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span>
+        <span class="n">seg_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">seg</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">find</span><span class="p">:</span> <span class="c1"># Já encontrou uma segmentação</span>
+                <span class="k">if</span> <span class="n">seg_copy</span><span class="p">[</span><span class="n">k</span><span class="p">,:,:]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="c1"># Prox layer não possui mais continuação da mesma</span>
+                    <span class="k">break</span>
+                <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="o">=</span> <span class="n">findElement</span><span class="p">(</span><span class="n">seg_copy</span><span class="p">[</span><span class="n">k</span><span class="p">,:,:]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">seg_i</span><span class="p">[</span><span class="n">k</span><span class="p">,:,:]</span> <span class="o">=</span> <span class="n">remove</span><span class="p">(</span><span class="n">searchVOI</span><span class="p">(</span><span class="n">seg</span><span class="p">[</span><span class="n">k</span><span class="p">,:,:]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">d</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                    <span class="n">seg_copy</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">,:,:]</span> <span class="o">*=</span> <span class="n">remove</span><span class="p">(</span><span class="n">seg_i</span><span class="p">[</span><span class="n">k</span><span class="p">,:,:]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+
+            <span class="k">if</span> <span class="n">seg_copy</span><span class="p">[</span><span class="n">k</span><span class="p">,:,:]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">==</span> <span class="n">seg_copy</span><span class="p">[</span><span class="n">k</span><span class="p">,:,:]</span><span class="o">.</span><span class="n">min</span><span class="p">():</span> <span class="c1"># Não possui nenhuma segmentação na layer selecionada</span>
+                <span class="k">continue</span>
+
+
+            <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="o">=</span> <span class="n">findElement</span><span class="p">(</span><span class="n">seg_copy</span><span class="p">[</span><span class="n">k</span><span class="p">,:,:]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># Inicio da segmentação </span>
+            <span class="n">seg_i</span><span class="p">[</span><span class="n">k</span><span class="p">,:,:]</span> <span class="o">=</span> <span class="n">remove</span><span class="p">(</span><span class="n">searchVOI</span><span class="p">(</span><span class="n">seg</span><span class="p">[</span><span class="n">k</span><span class="p">,:,:]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">find</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">d</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">seg_copy</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">,:,:]</span> <span class="o">*=</span> <span class="n">remove</span><span class="p">(</span><span class="n">seg_i</span><span class="p">[</span><span class="n">k</span><span class="p">,:,:]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">seg_i</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Segmentação </span><span class="si">{cont}</span><span class="s2"> concluída!&quot;</span><span class="p">)</span>
+
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">GetImageFromArray</span><span class="p">(</span><span class="n">seg_i</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">dados</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dados</span> <span class="o">=</span> <span class="n">extractFeatures</span><span class="p">(</span><span class="n">image_object</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">name</span><span class="o">+</span><span class="n">f</span><span class="s2">&quot;_</span><span class="si">{cont}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">binCount</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dados</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">dados</span><span class="p">,</span> <span class="n">extractFeatures</span><span class="p">(</span><span class="n">image_object</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">name</span><span class="o">+</span><span class="n">f</span><span class="s2">&quot;_</span><span class="si">{cont}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">binCount</span><span class="p">)],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">cont</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">seg</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">seg_i</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dados</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Machado, F. A. M.; Castaldoni, R. C. 
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
