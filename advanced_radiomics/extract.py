@@ -19,7 +19,7 @@ def generateRandomImageObject(size, lims=[0,255]):
 
     Parameters
     ----------
-    size:: tuple
+    size : tuple
         Shape of image.
     lims : list
         Min and Max values of the image.
@@ -33,13 +33,11 @@ def generateRandomImageObject(size, lims=[0,255]):
     --------
 
     >>> import SimpleITK as sitk
-
     >>> image = generateRandomImageObject((2,3,4))
     >>> print(sitk.GetArrayFromImage(image))
     [[[ 10 208  58 210]
       [253 142  92 100]
       [240  12  31 244]]
-
      [[ 50 119 103 103]
       [225 130  85  60]
       [ 63 121 226 239]]]
@@ -71,13 +69,11 @@ def generateRandomMaskObject(size, p=0.5):
     --------
 
     >>> import SimpleITK as sitk
-
     >>> mask = generateRandomMaskObject((2,3,4))
     >>> print(sitk.GetArrayFromImage(mask))
     [[[0 0 1 1]
       [0 1 0 0]
       [1 1 0 1]]
-
      [[1 1 1 0]
       [1 1 0 0]
       [0 1 1 0]]]
@@ -111,14 +107,11 @@ def generateBoth(size, lims=[0,255], p=0.5):
     --------
 
     >>> import SimpleITK as sitk
-
     >>> image, mask = generateBoth((2,3,4))
-
     >>> print(sitk.GetArrayFromImage(image))
     [[[222 221  50 176]
       [186 217  82  16]
       [160 133  53   4]]
-
      [[ 16 162 157 206]
       [ 24 130 228 136]
       [ 24  78  50 180]]]
@@ -127,7 +120,6 @@ def generateBoth(size, lims=[0,255], p=0.5):
     [[[1 1 0 0]
       [0 0 0 1]
       [0 0 0 0]]
-
      [[1 1 1 1]
       [1 0 0 1]
       [0 0 0 1]]]
@@ -197,9 +189,7 @@ def reduceSize(image_object, mask_object):
     --------
 
     >>> image = openFile("image.nrrd")
-    
     >>> mask = openFile("mask.nrrd")
-    
     >>> im, mk = reduceSize(image, mask)
 
     """
@@ -281,9 +271,7 @@ def extractFeatures(image, mask, name, binCount=8):
     --------
 
     >>> image = openFile("image.nrrd")
-
     >>> mask = openFile("mask.nrrd")
-
     >>> df = extractFeatures(image, mask, "John")
 
     """
@@ -448,4 +436,3 @@ def multiVOI(image_object, mask_object, name, binCount=8):
         seg += np.array(seg_i)
 
     return dados
-

@@ -45,7 +45,7 @@ def showImageMask(image_object, mask_object):
 
 # Information Visualization --------------------------------------------------------------------------------
 
-def plotPCA(data, class_, normalize=False):
+def plotPCA(data, target, normalize=False):
     """
 	Plot the first and second Principal Components of PCA and Separate Points by a class.
 
@@ -53,16 +53,16 @@ def plotPCA(data, class_, normalize=False):
 	----------
 	data : numpy.array or pandas.DataFrame
 		Data with values.
-	class_ : numpy.array, pandas.Series or str
-		If the class is in the data, class_ must be the Column's name of the class.
+	target : numpy.array, pandas.Series or str
+		If the class is in the data, target must be the Column's name of the class.
 
     """    
-    if type(class_) is str:
+    if type(target) is str:
         if type(data) is not pd.DataFrame:
             print("Data is not a Dataframe, class must be array.")
             return None
-        Y = data[class_].values.reshape((-1,1))
-        data = data.drop([class_], axis=1).values
+        Y = data[target].values.reshape((-1,1))
+        data = data.drop([target], axis=1).values
         if normalize:
             data = stats.zscore(data)
         pca = PCA(n_components=2).fit(data)
@@ -71,10 +71,10 @@ def plotPCA(data, class_, normalize=False):
         df = pd.DataFrame(np.concatenate([data_pca, Y],axis=1), 
                           columns=[f"PC1 ({round(evr[0]*100,1)}%)", f"PC2 ({round(evr[1]*100,1)}%)", "Y"])
     else:
-    	if type(class_) is pd.Series:
-    		class_ = class_.values.reshape((-1,1))
+    	if type(target) is pd.Series:
+    		target = target.values.reshape((-1,1))
     	else:
-    		class_ = class_.reshape((-1,1))
+    		target = target.reshape((-1,1))
     	if type(data) is pd.DataFrame:
     		data = data.values
     	if normalize:
@@ -82,7 +82,7 @@ def plotPCA(data, class_, normalize=False):
     	pca = PCA(n_components=2).fit(data)
     	evr = pca.explained_variance_ratio_
     	data_pca = pca.fit_transform(data)
-    	df = pd.DataFrame(np.concatenate([data_pca, class_],axis=1), 
+    	df = pd.DataFrame(np.concatenate([data_pca, target],axis=1), 
                           columns=[f"PC1 ({round(evr[0]*100,1)}%)", f"PC2 ({round(evr[1]*100,1)}%)", "Y"])
     
     sns.relplot(x=df.columns[0], y=df.columns[1], hue=df.columns[2], data=df)

@@ -1,6 +1,12 @@
 language: python
 python:
   - 3.6
+
+env:
+  global:
+    # Doctr deploy key for FelipeAugustoMachado/advanced-radiomics
+    - secure: "TGEm+hK4KvMlCdsnF4Y77m4+OBmITvV3Uju3N1xNNO7ACqWbapg/cqqP0Xy0Bu+5hQ2fg1YJ5g9tds/BCGfdptO5RTxiVe0YNvorbLAA4Kdg4VvO7VQZkRSLbXY/zJM8jgy4o/VdyfdsL6GwEvDcJ+oCQuqZj30D2IZFklCHwQMReur75Qi9+ot//hn0mcOtiMVYKKZLoHqLj1GvSV2406CJ/eVTRuw9n+ADm7fTdt5sx8sWUDwgli/OL4g1xrE4NXG4CjFQnhwX+MUF66N+W3WsES7979f7PaRvg5TBhe/Zbjsca1kmPZiW8ABs3M3ZoXL1pX3zQxNsQ/q4Mp4hSKAi8IPtrJY6zO/MBM4dghG6/uP3GYQHv2kJBDXbSCq/4ZpO8I+QBM9TUqkoxdJXSt/jYwYWdinOvMdbbWByXhIZD0f+SA4/5wvnk0XEQtRiKXdgjz9XeoHqDhzgzCtv6UqJxTmyJUdogMUrh6UQpcg5cswQ9XZz9Yog4fDtdJiMPyciX+cbDTqaA9brhqJMRZQFpvW7aFY1Clx9GGjzoWcHEU5KDioyV/gn4Logm9PtfihsBn6VUIlcXDW71vRqQYbGrXNZzPAqOF/YCWtBkEvv6ywCzR9xkx2yUTM1NEdSvr7Tg6bY/fpFD6bx9ZlEw88xYqvmBSwC36rDy9flGtk="
+
 cache:
   directories:
     - $HOME/.cache/pip
@@ -17,4 +23,7 @@ script:
   - coverage report -m  # Generate test coverage report.
   - codecov  # Upload the report to codecov.
   - flake8  # Enforce code style ('relaxed' line length limit is set in .flake8 config file).
+  - set -e
   - make -C docs html  # Build the documentation.
+  - pip install doctr
+  - doctr deploy --built-docs docs/build/html .

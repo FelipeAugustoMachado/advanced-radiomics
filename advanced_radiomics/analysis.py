@@ -23,7 +23,6 @@ def separateFeatures(data):
 	--------
 
 	>>> c_dict = separateFeatures(data)
-
 	>>> c_dict['GLCM']
 	  Autocorrelation_GLCM ClusterProminence_GLCM  ...      SumEntropy_GLCM    SumSquares_GLCM
 	0   19.291666666666668    0.01707175925925927  ...  0.23978697925681078  5.822048611111111
