@@ -8,6 +8,6 @@ sphinx
 # These are dependencies of various sphinx extensions for documentation.
 ipython
 matplotlib
-numpydoc
+numpydoc==0.7.0
 sphinx-copybutton
 sphinx_rtd_theme
