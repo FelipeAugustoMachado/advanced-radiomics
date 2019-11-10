@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Usage &mdash; Advanced Radiomics 0.1.0.post1+g404cf58 documentation</title>
+  <title>Usage &mdash; Advanced Radiomics 0.1.0.post4+g27c7f87 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                0.1.0.post1+g404cf58
+                0.1.0.post4+g27c7f87
               </div>
             
           
@@ -173,6 +173,78 @@
 transform images (reduce the size, create image with bins) and extract features for
 one segmentation or multiples segmentations (multiVOI).</p>
 <dl class="function">
+<dt id="advanced_radiomics.extract.generateRandomImage">
+<code class="sig-prename descclassname">advanced_radiomics.extract.</code><code class="sig-name descname">generateRandomImage</code><span class="sig-paren">(</span><em class="sig-param">size, lims=[0, 255]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/advanced_radiomics/extract.html#generateRandomImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#advanced_radiomics.extract.generateRandomImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create random image with numpy.random.random.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>size</strong> : tuple</p>
+<blockquote>
+<div><p>Shape of image.</p>
+</div></blockquote>
+<p><strong>lims</strong> : list</p>
+<blockquote>
+<div><p>Min and Max values of the image.</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>image</strong> : SimpleITK.Image</p>
+<blockquote>
+<div><p>Random image created.</p>
+</div></blockquote>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">SimpleITK</span> <span class="k">as</span> <span class="nn">sitk</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image</span> <span class="o">=</span> <span class="n">generateRandomImage</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sitk</span><span class="o">.</span><span class="n">GetArrayFromImage</span><span class="p">(</span><span class="n">image</span><span class="p">))</span>
+<span class="go">[[[ 10 208  58 210]</span>
+<span class="go">  [253 142  92 100]</span>
+<span class="go">  [240  12  31 244]]</span>
+<span class="go"> [[ 50 119 103 103]</span>
+<span class="go">  [225 130  85  60]</span>
+<span class="go">  [ 63 121 226 239]]]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="advanced_radiomics.extract.generateRandomMask">
+<code class="sig-prename descclassname">advanced_radiomics.extract.</code><code class="sig-name descname">generateRandomMask</code><span class="sig-paren">(</span><em class="sig-param">size</em>, <em class="sig-param">p=0.5</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/advanced_radiomics/extract.html#generateRandomMask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#advanced_radiomics.extract.generateRandomMask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create random mask with numpy.random.random.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>size</strong> : tuple</p>
+<blockquote>
+<div><p>Shape of image.</p>
+</div></blockquote>
+<p><strong>p</strong> : float</p>
+<blockquote>
+<div><p>Percentual of values equal to 0 in mask.</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>mask</strong> : SimpleITK.Image</p>
+<blockquote>
+<div><p>Random mask created.</p>
+</div></blockquote>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">SimpleITK</span> <span class="k">as</span> <span class="nn">sitk</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mask</span> <span class="o">=</span> <span class="n">generateRandomMask</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sitk</span><span class="o">.</span><span class="n">GetArrayFromImage</span><span class="p">(</span><span class="n">mask</span><span class="p">))</span>
+<span class="go">[[[0 0 1 1]</span>
+<span class="go">  [0 1 0 0]</span>
+<span class="go">  [1 1 0 1]]</span>
+<span class="go"> [[1 1 1 0]</span>
+<span class="go">  [1 1 0 0]</span>
+<span class="go">  [0 1 1 0]]]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
 <dt id="advanced_radiomics.extract.generateBoth">
 <code class="sig-prename descclassname">advanced_radiomics.extract.</code><code class="sig-name descname">generateBoth</code><span class="sig-paren">(</span><em class="sig-param">size, lims=[0, 255], p=0.5</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/advanced_radiomics/extract.html#generateBoth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#advanced_radiomics.extract.generateBoth" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create random both image and mask with numpy.random.random.</p>
@@ -250,6 +322,34 @@ one segmentation or multiples segmentations (multiVOI).</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="advanced_radiomics.extract.filterStatistical">
+<code class="sig-prename descclassname">advanced_radiomics.extract.</code><code class="sig-name descname">filterStatistical</code><span class="sig-paren">(</span><em class="sig-param">image_object</em>, <em class="sig-param">filter_type='prewitt'</em>, <em class="sig-param">sigma=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/advanced_radiomics/extract.html#filterStatistical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#advanced_radiomics.extract.filterStatistical" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter the image input. Supports 4 types of filters.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>image_object</strong> : SimpleITK.Image</p>
+<blockquote>
+<div><p>Image to filter.</p>
+</div></blockquote>
+<p><strong>filter_type</strong> : str, optional (default=”prewitt”)</p>
+<blockquote>
+<div><p>Type of filter. The filters are “prewitt”, “sobel”, “laplace”, “LoG”.</p>
+</div></blockquote>
+<p><strong>sigma</strong> : int, optional (default=1)</p>
+<blockquote>
+<div><p>Sigma of LoG. Only works if filter_type is equal to “LoG”.</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>image_filt_object</strong> : SimplITK.Image</p>
+<blockquote>
+<div><p>Image filtered.</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
 <dt id="advanced_radiomics.extract.reduceSize">
 <code class="sig-prename descclassname">advanced_radiomics.extract.</code><code class="sig-name descname">reduceSize</code><span class="sig-paren">(</span><em class="sig-param">image_object</em>, <em class="sig-param">mask_object</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/advanced_radiomics/extract.html#reduceSize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#advanced_radiomics.extract.reduceSize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reduce the size of both image and mask, where is the VOI.</p>
@@ -309,8 +409,8 @@ one segmentation or multiples segmentations (multiVOI).</p>
 
 <dl class="function">
 <dt id="advanced_radiomics.extract.extractFeatures">
-<code class="sig-prename descclassname">advanced_radiomics.extract.</code><code class="sig-name descname">extractFeatures</code><span class="sig-paren">(</span><em class="sig-param">image</em>, <em class="sig-param">mask</em>, <em class="sig-param">name</em>, <em class="sig-param">binCount=8</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/advanced_radiomics/extract.html#extractFeatures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#advanced_radiomics.extract.extractFeatures" title="Permalink to this definition">¶</a></dt>
-<dd><p>Extract all radiomics features from a image with it’s mask.</p>
+<code class="sig-prename descclassname">advanced_radiomics.extract.</code><code class="sig-name descname">extractFeatures</code><span class="sig-paren">(</span><em class="sig-param">image</em>, <em class="sig-param">mask</em>, <em class="sig-param">name</em>, <em class="sig-param">binCount=8</em>, <em class="sig-param">features='all'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/advanced_radiomics/extract.html#extractFeatures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#advanced_radiomics.extract.extractFeatures" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract the features by type.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>image</strong> : SimpleITK.Image</p>
@@ -321,28 +421,73 @@ one segmentation or multiples segmentations (multiVOI).</p>
 <blockquote>
 <div><p>Image’s mask.</p>
 </div></blockquote>
-<p><strong>name</strong> : string</p>
+<p><strong>name</strong> : str</p>
 <blockquote>
-<div><p>String with the identifier of image (name, ID or other).</p>
+<div><p>Identifier.</p>
 </div></blockquote>
-<p><strong>binCount</strong> : int</p>
+<p><strong>binCount</strong> : int, optional (default=8)</p>
 <blockquote>
-<div><p>Number of bins, default = 8.</p>
+<div><p>Number of bins.</p>
+</div></blockquote>
+<p><strong>features</strong> : str or list, optional (default=”all”)</p>
+<blockquote>
+<div><p>If “all”, calculate all features. If list, must contain at least one of these strings:
+* “FO” -&gt; First Order
+* “S3D” -&gt; Shap
+* “GLCM” -&gt; GLCM
+* “GLSZM” -&gt; GLSZM
+* “GLRLM” -&gt; GLRLM
+* “NGTDM” -&gt; NGTDM
+* “GLDM” -&gt; GLDM</p>
 </div></blockquote>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>data</strong> : pandas.DataFrame</p>
+<dd class="field-even"><p>df -&gt; pandas.DataFrame</p>
 <blockquote>
-<div><p>DataFrame with the features</p>
+<div><p>Dataframe with features calculated.</p>
 </div></blockquote>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">image</span> <span class="o">=</span> <span class="n">openFile</span><span class="p">(</span><span class="s2">&quot;image.nrrd&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">mask</span> <span class="o">=</span> <span class="n">openFile</span><span class="p">(</span><span class="s2">&quot;mask.nrrd&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">extractFeatures</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="s2">&quot;John&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="advanced_radiomics.extract.extractFilterStatistics">
+<code class="sig-prename descclassname">advanced_radiomics.extract.</code><code class="sig-name descname">extractFilterStatistics</code><span class="sig-paren">(</span><em class="sig-param">image</em>, <em class="sig-param">mask</em>, <em class="sig-param">name</em>, <em class="sig-param">filter_type='prewitt'</em>, <em class="sig-param">sigma=1</em>, <em class="sig-param">binCount=8</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/advanced_radiomics/extract.html#extractFilterStatistics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#advanced_radiomics.extract.extractFilterStatistics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract First Order feature’s of the filtered image.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>image</strong> : SimpleITK.Image</p>
+<blockquote>
+<div><p>Original image.</p>
+</div></blockquote>
+<p><strong>mask</strong> : SimpleITK.Image</p>
+<blockquote>
+<div><p>Image’s mask.</p>
+</div></blockquote>
+<p><strong>name</strong> : str</p>
+<blockquote>
+<div><p>Identifier.</p>
+</div></blockquote>
+<p><strong>filter_type</strong> : str, optional (default=”prewitt”)</p>
+<blockquote>
+<div><p>Type of filter. The filters are “prewitt”, “sobel”, “laplace”, “LoG”.</p>
+</div></blockquote>
+<p><strong>binCount</strong> : int, optional (default=8)</p>
+<blockquote>
+<div><p>Number of bins.</p>
+</div></blockquote>
+<p><strong>sigma</strong> : int, optional (default=1)</p>
+<blockquote>
+<div><p>Sigma of LoG. Only works if filter_type is equal to “LoG”.</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>features</strong> : pandas.DataFrame</p>
+<blockquote>
+<div><p>Dataframe with features.</p>
+</div></blockquote>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
