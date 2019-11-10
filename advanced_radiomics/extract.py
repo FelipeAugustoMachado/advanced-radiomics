@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import SimpleITK as sitk
 from radiomics import firstorder, glcm, imageoperations, shape, glrlm, glszm, shape2D, ngtdm, gldm
+from scipy import ndimage
 import sys
 import os 
 import six
@@ -167,6 +168,37 @@ def openFile(path_name):
 
 # Funções de alteração das imagens -------------------------------------------------
 
+def filterStatistical(image_object, filter_type="prewitt", sigma=1):
+    """
+    Filter the image input. Supports 4 types of filters.
+
+    Parameters
+    ----------
+    image_object : SimpleITK.Image
+        Image to filter.
+    filter_type : str, optional (default="prewitt")
+        Type of filter. The filters are "prewitt", "sobel", "laplace", "LoG".
+    sigma : int, optional (default=1)
+        Sigma of LoG. Only works if filter_type is equal to "LoG".
+
+    Returns
+    -------
+    image_filt_object : SimplITK.Image
+        Image filtered.
+
+    """
+    image_array = sitk.GetArrayFromImage(image_object)
+
+    filters = {"prewitt": ndimage.prewitt, "sobel": ndimage.sobel, 
+               "laplace": ndimage.laplace, "LoG": ndimage.gaussian_laplace}
+
+    filter_func = filters[filter_type]
+    if filter_type == "LoG":
+        image_filt_object = sitk.GetImageFromArray(filter_func(image_array, sigma))
+    else:    
+        image_filt_object = sitk.GetImageFromArray(filter_func(image_array))
+    return image_filt_object
+
 def reduceSize(image_object, mask_object):
     """
     Reduce the size of both image and mask, where is the VOI.
@@ -247,9 +279,9 @@ def createBin(image_object, num=8):
 
 # Função de extração -----------------------------------------------------------------
 
-def extractFeatures(image, mask, name, binCount=8):
+def extractFeatures(image, mask, name, binCount=8, features="all"):
     """
-    Extract all radiomics features from a image with it's mask.
+    Extract the features by type.
 
     Parameters
     ----------
@@ -257,84 +289,81 @@ def extractFeatures(image, mask, name, binCount=8):
         Original image.
     mask : SimpleITK.Image
         Image's mask.
-    name : string
-        String with the identifier of image (name, ID or other).
-    binCount : int
-        Number of bins, default = 8.
+    name : str
+        Identifier.
+    binCount : int, optional (default=8)
+        Number of bins.
+    features : str or list, optional (default="all")
+        If "all", calculate all features. If list, must contain at least one of these strings:
+        * "FO" -> First Order
+        * "S3D" -> Shap
+        * "GLCM" -> GLCM
+        * "GLSZM" -> GLSZM
+        * "GLRLM" -> GLRLM
+        * "NGTDM" -> NGTDM
+        * "GLDM" -> GLDM
 
     Returns
     -------
-    data : pandas.DataFrame
-        DataFrame with the features
-
-    Examples
-    --------
-
-    >>> image = openFile("image.nrrd")
-    >>> mask = openFile("mask.nrrd")
-    >>> df = extractFeatures(image, mask, "John")
+    df -> pandas.DataFrame
+        Dataframe with features calculated.
 
     """
-    firstOrderFeatures = firstorder.RadiomicsFirstOrder(image,mask, binCount=binCount)
-    firstOrderFeatures.enableAllFeatures()  # On the feature class level, all features are disabled by default.
-    firstOrderFeatures.execute()
-    names = ['Caso']
-    values = [name]
-    for (key,val) in six.iteritems(firstOrderFeatures.featureValues):
-        names.append(key+'_FO')
-        values.append(val)
+    def extractType(func, type_name):
+        name = []
+        values = []
+        feat = func(image,mask, binCount=binCount)
+        feat.enableAllFeatures()  
+        feat.execute()
+        for (key,val) in six.iteritems(feat.featureValues):
+            name.append(key+f'_{type_name}')
+            values.append(val)
+        return pd.DataFrame([values], columns=name)
 
-    shape_3D = shape.RadiomicsShape(image,mask, binCount=binCount)
-    shape_3D.enableAllFeatures()  # On the feature class level, all features are disabled by default.
-    shape_3D.execute()
-    for (key,val) in six.iteritems(shape_3D.featureValues):
-        names.append(key+'_S3D')
-        values.append(val)
+    features_array = np.array(["FO", "S3D", "GLCM", "GLSZM", "GLRLM", "NGTDM", "GLDM"])
+    features_func = np.array([firstorder.RadiomicsFirstOrder, shape.RadiomicsShape, glcm.RadiomicsGLCM,
+                              glszm.RadiomicsGLSZM, glrlm.RadiomicsGLRLM, ngtdm.RadiomicsNGTDM, 
+                              gldm.RadiomicsGLDM])
+    if features != "all":
+        if features is str:
+            print("Type wrong. Returning None.")
+            return None
+        index = pd.Index(features_array).isin(features)
+        features_array = features_array[index]
+        features_func = features_func[index]
 
-    GLCM = glcm.RadiomicsGLCM(image,mask, binCount=binCount)
-    GLCM.enableAllFeatures()  # On the feature class level, all features are disabled by default.
-    GLCM.execute()
-    for (key,val) in six.iteritems(GLCM.featureValues):
-        names.append(key+'_GLCM')
-        values.append(val)
+    list_feat = list(map(lambda i: extractType(features_func[i], features_array[i]), np.arange(len(features_array))))
+    df = pd.concat([pd.DataFrame([name], columns=["Caso"])] + list_feat, axis=1)
+    return df
 
-    GLSZM = glszm.RadiomicsGLSZM(image,mask, binCount=binCount)
-    GLSZM.enableAllFeatures()  # On the feature class level, all features are disabled by default.
-    GLSZM.execute()
-    for (key,val) in six.iteritems(GLSZM.featureValues):
-        names.append(key+'_GLSZM')
-        values.append(val)
+def extractFilterStatistics(image, mask, name, filter_type="prewitt", sigma=1, binCount=8):
+    """
+    Extract First Order feature's of the filtered image.
 
-    GLRLM = glrlm.RadiomicsGLRLM(image,mask, binCount=binCount)
-    GLRLM.enableAllFeatures()  # On the feature class level, all features are disabled by default.
-    GLRLM.execute()
-    for (key,val) in six.iteritems(GLRLM.featureValues):
-        names.append(key+'_GLRLM')
-        values.append(val)
+    Parameters
+    ----------
+    image : SimpleITK.Image
+        Original image.
+    mask : SimpleITK.Image
+        Image's mask.
+    name : str
+        Identifier.
+    filter_type : str, optional (default="prewitt")
+        Type of filter. The filters are "prewitt", "sobel", "laplace", "LoG".
+    binCount : int, optional (default=8)
+        Number of bins.
+    sigma : int, optional (default=1)
+        Sigma of LoG. Only works if filter_type is equal to "LoG".
 
+    Returns
+    -------
+    features : pandas.DataFrame
+        Dataframe with features.
 
-    NGTDM = ngtdm.RadiomicsNGTDM(image,mask, binCount=binCount)
-    NGTDM.enableAllFeatures()  # On the feature class level, all features are disabled by default.
-    NGTDM.execute()
-    for (key,val) in six.iteritems(NGTDM.featureValues):
-        names.append(key+'_NGTDM')
-        values.append(val)
-
-
-    GLDM = gldm.RadiomicsGLDM(image, mask, binCount=binCount)
-    GLDM.enableAllFeatures()
-    GLDM.execute()
-    for (key,val) in six.iteritems(GLDM.featureValues):
-        names.append(key+'_GLDM')
-        values.append(val)
-
-
-    values = np.array(values)
-    values = values.reshape((1,values.size))
-
-    data = pd.DataFrame(values, columns = names)
-
-    return data
+    """
+    image_filt = filterStatistical(image, filter_type, sigma)
+    features = extractFeatures(image_filt, mask, name, binCount=binCount, features=["FO"])
+    return features
 
 
 def multiVOI(image_object, mask_object, name, binCount=8):

@@ -20,9 +20,11 @@ one segmentation or multiples segmentations (multiVOI).
 .. autofunction:: advanced_radiomics.extract.generateRandomMask
 .. autofunction:: advanced_radiomics.extract.generateBoth
 .. autofunction:: advanced_radiomics.extract.openFile
+.. autofunction:: advanced_radiomics.extract.filterStatistical
 .. autofunction:: advanced_radiomics.extract.reduceSize
 .. autofunction:: advanced_radiomics.extract.createBin
 .. autofunction:: advanced_radiomics.extract.extractFeatures
+.. autofunction:: advanced_radiomics.extract.extractFilterStatistics
 .. autofunction:: advanced_radiomics.extract.multiVOI
 
 Module Analysis
