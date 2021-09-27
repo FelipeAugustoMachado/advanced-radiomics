@@ -296,7 +296,8 @@ def extractFeatures(image, mask, name, binCount=8, features="all"):
     features : str or list, optional (default="all")
         If "all", calculate all features. If list, must contain at least one of these strings:
         * "FO" -> First Order
-        * "S3D" -> Shap
+        * "S2D" -> Shape 2D
+        * "S3D" -> Shape 3D
         * "GLCM" -> GLCM
         * "GLSZM" -> GLSZM
         * "GLRLM" -> GLRLM
@@ -320,9 +321,11 @@ def extractFeatures(image, mask, name, binCount=8, features="all"):
             values.append(val)
         return pd.DataFrame([values], columns=name)
 
-    features_array = np.array(["FO", "S3D", "GLCM", "GLSZM", "GLRLM", "NGTDM", "GLDM"])
-    features_func = np.array([firstorder.RadiomicsFirstOrder, shape.RadiomicsShape, glcm.RadiomicsGLCM,
-                              glszm.RadiomicsGLSZM, glrlm.RadiomicsGLRLM, ngtdm.RadiomicsNGTDM, 
+    dim = image.GetDimension()
+
+    features_array = np.array(["FO", f"S{dim}D", "GLCM", "GLSZM", "GLRLM", "NGTDM", "GLDM"])
+    features_func = np.array([firstorder.RadiomicsFirstOrder, eval(f"shape{'2D'*(dim == 2)}.RadiomicsShape{'2D'*(dim==2)}"), 
+                              glcm.RadiomicsGLCM, glszm.RadiomicsGLSZM, glrlm.RadiomicsGLRLM, ngtdm.RadiomicsNGTDM, 
                               gldm.RadiomicsGLDM])
     if features != "all":
         if features is str:
